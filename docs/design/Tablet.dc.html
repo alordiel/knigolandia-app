@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>iPad — начало</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1F5C4A}a:hover{color:#17463A}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; background: #F7F6F2; font-family: 'IBM Plex Sans', sans-serif; color: #1C1F1E; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 28px 16px 8px 16px">
+    <a href="Drawer.dc.html" aria-label="Меню" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1C1F1E">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </a>
+    <div style="font-family: 'Literata', serif; font-weight: 700; font-size: 24px">Книголандия</div>
+    <button aria-label="Търсене" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #1C1F1E">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+    </button>
+  </header>
+  <div style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; display: flex; flex-direction: column; flex: 1; overflow: hidden">
+    <nav style="display: flex; gap: 8px; padding: 8px 0 12px 0; max-width: 520px">
+      <button style="flex: 1; height: 44px; border-radius: 22px; border: 0; background: {{accent}}; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 600">Художествена</button>
+      <button style="flex: 1; height: 44px; border-radius: 22px; border: 1px solid #C9C6BC; background: transparent; color: #1C1F1E; font-family: inherit; font-size: 15px; font-weight: 500">Нехудожествена</button>
+    </nav>
+    <div style="display: flex; gap: 8px; padding: 0 0 16px 0">
+      <span style="padding: 6px 12px; border-radius: 8px; background: #E4EFEA; color: #17463A; font-size: 13px; font-weight: 500">Всички</span>
+      <span style="padding: 6px 12px; border-radius: 8px; background: #ECEAE3; color: #4A4D4B; font-size: 13px">Трилър</span>
+      <span style="padding: 6px 12px; border-radius: 8px; background: #ECEAE3; color: #4A4D4B; font-size: 13px">Фентъзи</span>
+      <span style="padding: 6px 12px; border-radius: 8px; background: #ECEAE3; color: #4A4D4B; font-size: 13px">Драма</span>
+      <span style="padding: 6px 12px; border-radius: 8px; background: #ECEAE3; color: #4A4D4B; font-size: 13px">Фантастика</span>
+      <span style="padding: 6px 12px; border-radius: 8px; background: #ECEAE3; color: #4A4D4B; font-size: 13px">Хумор</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+      <sc-for list="{{books}}" as="b" hint-placeholder-count="6">
+        <a href="TabletReview.dc.html" style="display: flex; gap: 16px; padding: 14px; background: #FFFFFF; border-radius: 12px; text-decoration: none; color: #1C1F1E; box-shadow: 0 1px 2px rgba(28,31,30,0.06)">
+          <div style="flex-shrink: 0; width: 96px; height: 144px; border-radius: 4px; background: {{b.color}}; display: flex; align-items: flex-end; padding: 8px; box-sizing: border-box; color: #FFFFFF; font-family: 'Literata', serif; font-size: 12px; line-height: 1.2; font-weight: 700">{{b.book}}</div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px">
+            <div style="font-family: 'Literata', serif; font-weight: 700; font-size: 18px; line-height: 1.3">{{b.headline}}</div>
+            <div style="font-size: 14px; color: #4A4D4B">{{b.author}}</div>
+            <div style="font-size: 13px; color: #5E615F">Превод: {{b.translator}}</div>
+            <div role="img" aria-label="Рейтинг {{b.ratingText}} от 5" style="display: flex; align-items: center; gap: 2px">
+              <sc-for list="{{b.stars}}" as="s" hint-placeholder-count="5">
+                <span style="position: relative; display: block; width: 16px; height: 16px">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#D9D4C7" aria-hidden="true" style="position: absolute; left: 0; top: 0"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"></path></svg>
+                  <span style="position: absolute; left: 0; top: 0; display: block; height: 16px; overflow: hidden; width: {{s.w}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="#C8871E" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"></path></svg></span>
+                </span>
+              </sc-for>
+              <span style="margin-left: 6px; font-size: 13px; font-weight: 600; color: #4A4D4B">{{b.ratingText}}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; font-size: 13px; color: #5E615F">
+              <span style="padding: 2px 8px; border-radius: 6px; background: #ECEAE3">{{b.genre}}</span>
+              <span>{{b.time}} мин</span>
+              <sc-if value="{{b.offline}}" hint-placeholder-val="{{ false }}">
+                <span style="display: flex; align-items: center; gap: 3px; color: #1F5C4A">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>офлайн
+                </span>
+              </sc-if>
+            </div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5C4A","options":["#1F5C4A","#7A2E2E","#2E4A6B"]},"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const R = [4.5, 4, 3.5, 4, 3, 5];
+    const star = (r) => [0, 1, 2, 3, 4].map((i) => ({ w: Math.max(0, Math.min(1, r - i)) * 100 + '%' }));
+    const add = (list) => list.map((b, i) => ({ ...b, ratingText: String(R[i]).replace('.', ','), stars: star(R[i]) }));
+    return {
+      accent: this.props.accent ?? '#1F5C4A',
+      books: add([
+        { book: 'Кървавата роза', headline: 'Кървавата роза копнее да излезе от бащината сянка', author: 'Никълъс Иймс', translator: 'Елена Павлова', genre: 'Фентъзи', time: 6, color: '#7A2E2E', offline: true },
+        { book: 'Минали години', headline: 'Миналите години са идеал, докато не станат сурова реалност', author: 'Каро Клеър Бърк', translator: 'Майре Буюклиева', genre: 'Драма', time: 10, color: '#2E4A6B', offline: true },
+        { book: 'Станция „Недър“', headline: 'Ужас очаква обитателите на станция „Недър“', author: 'Кевин Дж. Андерсън', translator: 'Иван С. Иванов', genre: 'Фантастика', time: 5, color: '#3C4F3A', offline: true },
+        { book: 'Краят на Уолтър Неш', headline: 'Краят на Уолтър Неш, началото на едно отмъщение', author: 'Дейвид Балдачи', translator: 'Калин Караиванов', genre: 'Трилър', time: 5, color: '#4B3A5E', offline: false },
+        { book: 'Съвършена тишина', headline: 'Психопат шие кукли от кожа в „Съвършена тишина“', author: 'Хелън Фийлдс', translator: 'Майре Буюклиева', genre: 'Трилър', time: 4, color: '#6B4A26', offline: false },
+        { book: 'Сестрите Блу', headline: 'Сестрите Блу се разделят, за да останат', author: 'Коко Мелърс', translator: 'Ирина Димитрова', genre: 'Драма', time: 11, color: '#2F4F4F', offline: false }
+      ])
+    };
+  }
+}
+</script>
+</body>
+</html>

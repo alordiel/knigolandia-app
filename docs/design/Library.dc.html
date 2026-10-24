@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>За по-късно</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1F5C4A}a:hover{color:#17463A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F7F6F2; font-family: 'IBM Plex Sans', sans-serif; color: #1C1F1E; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; gap: 4px; padding: 52px 8px 8px 8px">
+    <a href="Drawer.dc.html" aria-label="Меню" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1C1F1E">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-family: 'Literata', serif; font-weight: 700; font-size: 22px">За по-късно</h1>
+  </header>
+  <div style="margin: 4px 16px 16px 16px; padding: 14px 16px; background: #FFFFFF; border-radius: 12px; display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; justify-content: space-between; font-size: 13px">
+      <span style="font-weight: 500">9 ревюта на устройството</span>
+      <span style="color: #5E615F">1,4 MB</span>
+    </div>
+    <div style="height: 6px; border-radius: 3px; background: #ECEAE3; overflow: hidden">
+      <div style="width: 18%; height: 6px; background: {{accent}}"></div>
+    </div>
+    <div style="font-size: 12px; color: #5E615F">Всичко добавено тук се изтегля за четене без интернет.</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 12px; padding: 0 16px">
+    <sc-for list="{{books}}" as="b" hint-placeholder-count="9">
+      <a href="Offline.dc.html" style="display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #1C1F1E">
+        <div style="position: relative; aspect-ratio: 2 / 3; border-radius: 4px; background: {{b.color}}; display: flex; align-items: flex-end; padding: 8px; box-sizing: border-box; color: #FFFFFF; font-family: 'Literata', serif; font-size: 12px; font-weight: 700; line-height: 1.2">
+          {{b.book}}
+          <span style="position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF; color: #1F5C4A; display: flex; align-items: center; justify-content: center">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+          </span>
+        </div>
+        <div style="font-size: 12px; color: #4A4D4B; line-height: 1.3">{{b.author}}</div>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5C4A","options":["#1F5C4A","#7A2E2E","#2E4A6B"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#1F5C4A',
+      books: [
+        { book: 'Минали години', author: 'Каро Клеър Бърк', color: '#2E4A6B' },
+        { book: '10 птици, които промениха света', author: 'Стивън Мос', color: '#3C4F3A' },
+        { book: 'Сестрите Блу', author: 'Коко Мелърс', color: '#4B3A5E' },
+        { book: 'Безкрайни форми най-красиви', author: 'Шон Б. Карол', color: '#6B4A26' },
+        { book: 'Седемте чудеса', author: 'Бетани Хюз', color: '#7A2E2E' },
+        { book: 'Към езерото', author: 'Капка Касабова', color: '#2F4F4F' },
+        { book: 'Станция „Недър“', author: 'Кевин Дж. Андерсън', color: '#3A3F5C' },
+        { book: 'Съвършена тишина', author: 'Хелън Фийлдс', color: '#5A2F3F' },
+        { book: 'Кървавата роза', author: 'Никълъс Иймс', color: '#7A2E2E' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

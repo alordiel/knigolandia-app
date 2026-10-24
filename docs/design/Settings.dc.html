@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>Настройки</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1F5C4A}a:hover{color:#17463A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F7F6F2; font-family: 'IBM Plex Sans', sans-serif; color: #1C1F1E; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; gap: 4px; padding: 52px 8px 8px 8px">
+    <a href="Drawer.dc.html" aria-label="Меню" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1C1F1E">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-family: 'Literata', serif; font-weight: 700; font-size: 22px">Настройки</h1>
+  </header>
+  <div style="display: flex; flex-direction: column; gap: 24px; padding: 8px 16px">
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0 4px; font-size: 12px; font-weight: 600; color: #5E615F; letter-spacing: 0.6px">ТЕМА</h2>
+      <div role="radiogroup" aria-label="Тема" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #ECEAE3; border-radius: 12px">
+        <button role="radio" aria-checked="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #1C1F1E; box-shadow: 0 1px 2px rgba(28,31,30,0.1)">Системна</button>
+        <button role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 14px; color: #4A4D4B">Светла</button>
+        <button role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 14px; color: #4A4D4B">Тъмна</button>
+      </div>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0 4px; font-size: 12px; font-weight: 600; color: #5E615F; letter-spacing: 0.6px">ИЗВЕСТИЯ</h2>
+      <div style="background: #FFFFFF; border-radius: 12px">
+        <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; min-height: 44px; box-sizing: border-box">
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 500">Нови ревюта</span>
+            <span style="font-size: 12px; color: #5E615F">Известие при публикуване на ново ревю</span>
+          </span>
+          <input type="checkbox" checked role="switch" style="width: 0; height: 0; opacity: 0; position: absolute">
+          <span aria-hidden="true" style="width: 50px; height: 30px; border-radius: 15px; background: {{accent}}; display: flex; align-items: center; justify-content: flex-end; padding: 3px; box-sizing: border-box">
+            <span style="width: 24px; height: 24px; border-radius: 12px; background: #FFFFFF"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0 4px; font-size: 12px; font-weight: 600; color: #5E615F; letter-spacing: 0.6px">ЧЕТЕНЕ</h2>
+      <div style="background: #FFFFFF; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+        <span style="flex: 1; font-size: 15px; font-weight: 500">Размер на текста</span>
+        <button aria-label="По-малък текст" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #C9C6BC; background: transparent; font-family: 'Literata', serif; font-size: 14px; color: #1C1F1E">A</button>
+        <span style="font-size: 14px; color: #4A4D4B; width: 36px; text-align: center">17</span>
+        <button aria-label="По-голям текст" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #C9C6BC; background: transparent; font-family: 'Literata', serif; font-size: 20px; color: #1C1F1E">A</button>
+      </div>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0 4px; font-size: 12px; font-weight: 600; color: #5E615F; letter-spacing: 0.6px">СЪХРАНЕНИЕ</h2>
+      <div style="background: #FFFFFF; border-radius: 12px; display: flex; flex-direction: column">
+        <div style="display: flex; justify-content: space-between; padding: 14px 16px; font-size: 15px; border-bottom: 1px solid #ECEAE3"><span>Каталог (3000 книги)</span><span style="color: #5E615F; font-size: 14px">обновен днес</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 14px 16px; font-size: 15px; border-bottom: 1px solid #ECEAE3"><span>Офлайн ревюта</span><span style="color: #5E615F; font-size: 14px">19 · 2,1 MB</span></div>
+        <button style="height: 52px; border: 0; background: transparent; font-family: inherit; font-size: 15px; font-weight: 500; color: #9B2C2C; text-align: left; padding: 0 16px">Изчисти автоматичния кеш</button>
+      </div>
+    </section>
+    <div style="text-align: center; font-size: 12px; color: #5E615F">Книголандия · версия [X.Y.Z]</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1F5C4A","options":["#1F5C4A","#7A2E2E","#2E4A6B"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return { accent: this.props.accent ?? '#1F5C4A' }; }
+}
+</script>
+</body>
+</html>
