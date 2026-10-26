@@ -1,38 +1,49 @@
 # Knigolandia app — WordPress side
 
 Instructions for building the server side of the Knigolandia mobile app (Expo / React Native) on knigolandia.info.
-Build it as **one small plugin**: `wp-content/plugins/knigolandia-app/`. Keep it self-contained, with no
-dependency on theme code.
+Build it as part of the active theme: put all related code in an `app/` folder inside the theme and load it with
+one `require_once` from `functions.php`. Keep it self-contained (no dependency on other theme code), so it could
+be moved into a plugin later. Themes have no activation hook, so run one-off setup (the push tokens table) from
+a version check: compare a `knigolandia_app_db_version` option on `admin_init` /
+`after_switch_theme` and run `dbDelta` when it's behind.
 
 The app is already written against the contracts below. **Field names, types and URLs are a contract.** Do not
 rename them; if something can't be done as specified, say so instead of changing the shape.
 
 ---
 
-## 0. Before writing code — discover the data model
+## 0. Data model
 
-The site stores book data in custom fields and taxonomies whose exact keys are unknown to the app team.
-Find them first and write them down in the plugin's README:
+Where each app field comes from on the site:
 
-| app field | what to find |
+| app field | source |
 |---|---|
-| author(s) | where authors live (post meta with IDs? a taxonomy? a CPT?) and how to get ID + display name |
-| translator(s) | same as authors |
-| publisher | custom term — taxonomy slug |
-| genre(s) | custom term — taxonomy slug |
-| book title | the book's title (distinct from the post title, which is the review headline) |
-| rating | star rating 0–5, halves allowed — meta key |
-| series, pages | if these exist anywhere (meta key), include them; otherwise omit the fields |
-| cover | the featured image (confirm) |
+| `author_id` / `authors` | taxonomy `book_author` — one or more terms |
+| `translator_id` / `translators` | taxonomy `book_translator` — zero or more terms |
+| `publisher_id` / `publishers` | taxonomy `book_publisher` — zero or one term (if several, take the first) |
+| `genre_id` / `genres` | taxonomy `book_genre` — zero or more terms |
+| `title` | post meta `books_title`; if empty, the post title |
+| `rating` | post meta `rating` — may be empty |
+| `book_series` | taxonomy `book_sequel` — term name; may be empty |
+| `series_number` | post meta `sequel_order` — omit if empty |
+| `pages` | post meta `pages` — omit if empty |
+| `img` | post meta `books_cover` (**not** the featured image) — check whether it stores an attachment ID or a URL and resolve it to the attachment either way |
+| `ozone_url` | post meta `ozone_link` — omit if empty |
 
-Only posts in these two categories (and their child categories, if any — check) are part of the app:
+Lookup-table IDs (`authors`, `translators`, …) are the **term IDs** of these taxonomies.
 
-| category slug | `category` value in JSON |
-|---|---|
-| `hudozhestvena-literatura` | `fiction` |
-| `nehudozhestvena-literatura` | `nonfiction` |
+Only posts in these two categories are part of the app:
 
-Only `publish` status posts. Never include drafts, private, password-protected or scheduled posts.
+| category slug | term_id | `category` value in JSON |
+|---|---|---|
+| `hudozhestvena-literatura` | 7 | `fiction` |
+| `nehudozhestvena-literatura` | 8 | `nonfiction` |
+
+A post is **in the app** when all of these hold — use one shared function for it, everywhere (catalogue,
+`reviews`, `related`, push):
+- status `publish`, not password-protected (never drafts, private or scheduled posts);
+- in category 7 or 8;
+- the `exclude_from_app` checkbox (§1) is not checked.
 
 ---
 
@@ -65,9 +76,11 @@ it into place so clients never read a half-written file.
       "category": "fiction",
       "rating": 4.5,
       "reading-time": 6,
+      "ozone_url": "https://www.ozone.bg/product/patyat-kam-kitezh/?affid=knigolandia&source=affiliate&medium=knigolandia",
       "img": "2026/10/karvavata-roza",
       "mtime": 1739000000,
-      "series": "The Band",
+      "book_series": "The Band",
+      "series_number": 2,
       "pages": 592
     }
   ]
@@ -86,29 +99,40 @@ it into place so clients never read a half-written file.
 | `category` | `"fiction"` \| `"nonfiction"` | |
 | `rating` | number | 0–5, halves allowed; `0` if unrated |
 | `reading-time` | int | minutes, `ceil(word_count / 200)`, minimum 1. Count words on the stripped content; Cyrillic needs a Unicode-aware count (`preg_match_all('/[\p{L}\p{N}]+/u', ...)`), not `str_word_count` |
-| `img` | string | featured image path relative to `uploads/`, **without** the size suffix and extension, e.g. `2026/10/karvavata-roza`. Empty string if none |
+| `img` | string | cover (`books_cover`) path relative to `uploads/`, **without** the size suffix and extension, e.g. `2026/10/karvavata-roza`. Empty string if none |
 | `mtime` | int | `post_modified_gmt` as unix timestamp |
-| `series` | string | **optional** — omit the key when unknown |
+| `book_series` | string | **optional** — term name; omit the key when unknown |
+| `series_number` | number | **optional** — position in the series as a JSON number (`2`, or `2.5` for an in-between novella), never a string; omit the key when unknown |
 | `pages` | int | **optional** — omit the key when unknown |
+| `ozone_url` | string | **optional** — omit the key when unknown |
 
 Sort `books` by publish date, newest first. Output with `wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)`.
 Expected size: ~3000 books, ~450 KB raw / ~100 KB gzipped — make sure the server gzips `.json` (or the §2 route does).
 
 ### Regeneration
 Regenerate on `save_post` (only for posts in the two categories), `deleted_post`, `trashed_post`,
-`transition_post_status` (publish ↔ anything), and `edited_term` / `delete_term` for the author / translator /
-publisher / genre taxonomies (renames must reach the lookup tables).
+`transition_post_status` (publish ↔ anything), and `edited_term` / `delete_term` for the `book_author`,
+`book_translator`, `book_publisher`, `book_genre` and `book_sequel` taxonomies (renames must reach the lookup
+tables and series names).
 
 **Debounce:** the hooks must not regenerate inline. Schedule a single WP-Cron event ~60 s ahead if one isn't
 already scheduled (`wp_next_scheduled` / `wp_schedule_single_event`); the event does the generation. Bulk edits
 then cause one rebuild.
 
 Also add a WP-CLI command `wp knigolandia-app catalog` that regenerates immediately (for the first build and
-for debugging), and an admin-only "Regenerate now" button on a small settings page.
+for debugging), and an admin-only "Regenerate now" button on a small settings page (Settings → Knigolandia app).
 
 Generation must be efficient for 3000 posts: one `WP_Query` with `fields => 'ids'`, `no_found_rows => true`,
 `posts_per_page => -1`, then prime caches with `update_meta_cache('post', $ids)` and
 `update_object_term_cache($ids, 'post')`. No per-post queries in a loop.
+
+### Excluding a post — `exclude_from_app`
+Add a meta box on the post edit screen ("Скрий от приложението") with one checkbox, saved as post meta
+`exclude_from_app` (`1` / deleted). Register the meta with `register_post_meta` (`show_in_rest => true`,
+`single => true`, type `boolean`) so it also works in the block editor sidebar; verify nonce and
+`current_user_can('edit_post', $id)` on save. A checked post is not "in the app" (§0): it disappears from the
+catalogue on the next regeneration, its `reviews` / `related` routes return 404, it's never in other posts'
+`related` lists, and publishing it sends no push. Toggling the checkbox must trigger the debounced regeneration.
 
 ---
 
@@ -154,11 +178,11 @@ To be able to lock down `wp/v2` later (§8), add app-namespace equivalents. The 
   handles `data-src` / `data-srcset`.
 - `modified` = `post_modified_gmt` as unix timestamp; `date` = local publish date in ISO format (`get_the_date('c')`
   without timezone suffix is fine — the app reads only `YYYY-MM-DD`).
-- 404 (`{ "code": "not_found" }`) for posts that aren't published or aren't in the two categories.
+- 404 (`{ "code": "not_found" }`) for posts that aren't "in the app" (§0).
 - `Cache-Control: public, max-age=300`.
 
 ### `GET /wp-json/app/v1/reviews?slug={slug}`
-`{ "id": 123 }` or 404. Same publish/category rules.
+`{ "id": 123 }` or 404. Same "in the app" rule.
 
 ---
 
@@ -168,13 +192,13 @@ To be able to lock down `wp/v2` later (§8), add app-namespace equivalents. The 
 { "sameAuthor": [456], "similar": [789, 790, 791, 792] }
 ```
 - Plain post IDs; the app resolves them against the catalogue and drops IDs it doesn't know.
-- `sameAuthor`: other books sharing at least one author, newest first, max 10, excluding `{id}`.
-- `similar`: books sharing genres, ranked by number of shared genres, then newest; same category as `{id}`;
-  exclude `{id}` and anything already in `sameAuthor`; max 10.
-- Only published posts in the two categories.
+- `sameAuthor`: other books sharing at least one `book_author` term, newest first, max 10, excluding `{id}`.
+- `similar`: books sharing `book_genre` terms, ranked by number of shared genres, then newest; same category as
+  `{id}`; exclude `{id}` and anything already in `sameAuthor`; max 10.
+- Only posts "in the app" (§0), both for `{id}` and for the returned IDs.
 - Cache the result in a transient per post (e.g. 12 h) and flush transients when the catalogue regenerates.
   `Cache-Control: public, max-age=3600`.
-- Unknown / unpublished `{id}` → 404.
+- `{id}` not in the app → 404.
 
 ---
 
@@ -191,8 +215,10 @@ add_image_size('app-large', 400, 600, true);  // → {base}-400x600.webp
   GD/Imagick supports WebP). If WP would name the file differently (e.g. keep `.jpg` in the name), fix it in the
   generation step, not by changing the app's pattern.
 - Scope the WebP mapping to these two sizes only if possible, so the rest of the site is unaffected.
+- The cover is the `books_cover` attachment (§0). Make sure the two sizes are generated for it on upload, and
+  when `books_cover` is changed to an existing attachment that lacks them.
 - **Backfill** existing covers: a WP-CLI command `wp knigolandia-app covers` that generates just these two sizes
-  for every featured image of a catalogue post (don't regenerate all sizes site-wide).
+  for the `books_cover` attachment of every catalogue post (don't regenerate all sizes site-wide).
 
 ---
 
@@ -200,7 +226,8 @@ add_image_size('app-large', 400, 600, true);  // → {base}-400x600.webp
 
 ### Storage
 Custom table `{$wpdb->prefix}knigolandia_push_tokens`: `id`, `token` (varchar 255, unique), `platform`
-(`ios`|`android`), `created_at`, `last_seen_at`. Create with `dbDelta` on activation.
+(`ios`|`android`), `created_at`, `last_seen_at`. Create with `dbDelta` from the version check described at
+the top (themes have no activation hook).
 
 ### Routes
 - `POST /wp-json/app/v1/push/subscribe` — body `{ "token": "ExponentPushToken[…]", "platform": "ios" }`.
@@ -208,8 +235,10 @@ Custom table `{$wpdb->prefix}knigolandia_push_tokens`: `id`, `token` (varchar 25
 - `POST /wp-json/app/v1/push/unsubscribe` — body `{ "token": "…" }`. Delete. `{ "ok": true }` even if absent.
 
 ### Sending
-- Trigger on `transition_post_status` when `$new === 'publish' && $old !== 'publish'` for posts in the two
-  categories — **not** `save_post`/`publish_post` alone, so edits to published posts don't re-notify.
+- Trigger on `transition_post_status` when `$new === 'publish' && $old !== 'publish'` for posts "in the app"
+  (§0) — **not** `save_post`/`publish_post` alone, so edits to published posts don't re-notify. Evaluate the
+  rule in the cron job, not in the hook: the block editor saves post meta (incl. `exclude_from_app`) in a
+  separate request, after the status change.
 - Send asynchronously (schedule a single cron event), never inside the editor's save request.
 - Expo Push API: `POST https://exp.host/--/api/v2/push/send`, batches of **100** messages.
   Message: `{ "to": token, "title": "Ново ревю", "body": <headline>, "data": { "id": <post id> }, "sound": "default" }`.
@@ -297,6 +326,7 @@ term name shows up in the catalogue after the debounce; publishing a post sends 
 sends none; the block editor still works with Layer 3 enabled.
 
 ## Deliverables
-- The plugin, with a README listing: discovered meta keys/taxonomies, all routes, `wp-config.php` constants,
-  WP-CLI commands, and the server snippets (nginx / Cloudflare / system cron) the admin must apply.
+- The `app/` folder in the theme, with a `README.md` listing: all routes, `wp-config.php` constants, WP-CLI
+  commands, the `functions.php` include line, and the server snippets (nginx / Cloudflare / system cron) the
+  admin must apply.
 - A short note of anything in this document that couldn't be done as written, and why.

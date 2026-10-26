@@ -19,9 +19,11 @@ export type Book = {
   'reading-time': number;
   img: string;
   mtime: number;
-  /** Not in the catalogue yet — shown when present. */
-  series?: string;
+  /** Optional — omitted from the JSON when unknown. */
+  book_series?: string;
+  series_number?: number;
   pages?: number;
+  ozone_url?: string;
 };
 
 export type Lookup = Record<string, string>;

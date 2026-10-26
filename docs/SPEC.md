@@ -31,7 +31,9 @@ Only two categories: `hudozhestvena-literatura` (fiction) and `nehudozhestvena-l
   "books": [
     { "id": 123, "title": "Кървавата роза", "heading": "Кървавата роза копнее да излезе от бащината сянка",
       "author_id": [12], "translator_id": [4], "publisher_id": 7, "genre_id": [3], "category": "fiction",
-      "rating": 4.5, "reading-time": 6, "img": "2026/10/karvavata-roza", "mtime": 1739000000 }
+      "rating": 4.5, "reading-time": 6, "img": "2026/10/karvavata-roza", "mtime": 1739000000,
+      "book_series": "The Band", "series_number": 2, "pages": 592,
+      "ozone_url": "https://www.ozone.bg/product/…" }
   ]
 }
 ```
@@ -41,13 +43,16 @@ Only two categories: `hudozhestvena-literatura` (fiction) and `nehudozhestvena-l
 | title | book title |
 | heading | review headline (post title) |
 | author_id / translator_id | author / translator IDs (post meta) |
-| poubliusher_id | publisher ID (custom term) |
+| publisher_id | publisher ID (custom term) |
 | genre_id | genre IDs (custom term) |
 | category | `fiction` \| `nonfiction` |
 | rating | star rating 0–5, halves allowed |
 | reading-time | reading time, minutes |
 | img | cover base path (no size suffix / extension) |
-| m | modified timestamp |
+| mtime | modified timestamp |
+| book_series / series_number / pages / ozone_url | optional, omitted when unknown |
+
+Full field sources and server-side contract: docs/WORDPRESS.md.
 
 ### Review content
 `GET /wp-json/wp/v2/posts/{id}?_fields=id,content,modified` → `content.rendered` HTML.

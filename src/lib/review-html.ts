@@ -99,6 +99,12 @@ function actionButton(action: ListAction) {
   return `<button id="a-${action}" data-action="${action}" data-on="${on}" data-off="${off}" aria-pressed="false"><svg viewBox="0 0 24 24">${ICONS[action]}</svg><span>${off}</span></button>`;
 }
 
+/** Affiliate link to Ozone; the WebView's link handler opens it in the in-app browser. */
+function buyButton(url?: string) {
+  if (!url || !/^https?:\/\//i.test(url)) return '';
+  return `<a class="buy" href="${escapeHtml(url)}"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span>Купи от Ozone</span><svg class="ext" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></a>`;
+}
+
 export function relatedHtml(sameAuthor: RelatedBook[], similar: RelatedBook[]) {
   const row = (title: string, books: RelatedBook[]) =>
     books.length === 0
@@ -130,7 +136,11 @@ export function buildReviewHtml(opts: {
   if (meta.genres.length) rows.push(['Жанр', meta.genres.join(', ')]);
   if (meta.publisher)
     rows.push(['<span class="ph">Изд.</span><span class="tb">Издателство</span>', meta.publisher]);
-  if (book.series) rows.push(['Поредица', book.series]);
+  if (book.book_series)
+    rows.push([
+      'Поредица',
+      book.series_number != null ? `${book.book_series} #${book.series_number}` : book.book_series,
+    ]);
   if (book.pages) rows.push(['Страници', String(book.pages)]);
 
   const dl = rows
@@ -155,7 +165,7 @@ export function buildReviewHtml(opts: {
     </div>
   </div>`;
   const actions = online
-    ? `<div class="actions">${actionButton('bookmarks')}${actionButton('wishlist')}${actionButton('readLater')}</div>`
+    ? `<div class="actions">${actionButton('bookmarks')}${actionButton('wishlist')}${actionButton('readLater')}</div>${buyButton(book.ozone_url)}`
     : '';
 
   const metaLine = [formatDate(meta.date), book['reading-time'] ? `${book['reading-time']} мин четене` : null]
@@ -218,6 +228,13 @@ h1 { font-family: var(--serif); font-size: 23px; line-height: 1.28; font-weight:
 .actions button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 .actions button.on:not(#a-readLater) svg { fill: currentColor; }
 .actions button.busy { opacity: 0.55; }
+.buy { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; margin: -8px 0 16px;
+  border-radius: 12px; border: 1px solid var(--border); color: var(--text); text-decoration: none;
+  font: 500 14px var(--sans); }
+.buy svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
+.buy .ext { width: 14px; height: 14px; color: var(--muted); }
+.buy:active { opacity: 0.6; }
 
 .compact { padding-top: 8px; align-items: flex-start; }
 .compact .cover { width: 72px; height: 108px; padding: 8px; font-size: 11px; box-shadow: none; }
@@ -268,6 +285,7 @@ h1 { font-family: var(--serif); font-size: 23px; line-height: 1.28; font-weight:
   .meta { font-size: 14px; }
   .actions { gap: 12px; margin: 20px 0; }
   .actions button { height: 52px; flex-direction: row; gap: 8px; font-size: 15px; font-weight: 400; }
+  .buy { height: 52px; margin: -8px 0 20px; font-size: 15px; }
   .content { font-size: calc(var(--fs) + 2px); line-height: 1.7; }
   .content p { margin: 14px 0; }
   .content .alignright { margin-left: 18px; }
