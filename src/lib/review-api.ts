@@ -1,4 +1,4 @@
-import { API_URL } from '@/lib/config';
+import { ApiError, apiJson } from '@/lib/api';
 
 export type ReviewPost = {
   id: number;
@@ -10,41 +10,25 @@ export type ReviewPost = {
   link?: string;
 };
 
-type WpPost = {
-  id: number;
-  content: { rendered: string };
-  modified_gmt: string;
-  date: string;
-  link: string;
-};
-
+/** Review body + metadata (`app/v1/reviews/{id}`, docs/WORDPRESS.md §3). */
 export async function fetchReview(id: number): Promise<ReviewPost> {
-  const res = await fetch(
-    `${API_URL}/wp/v2/posts/${id}?_fields=id,content,modified_gmt,date,link`
-  );
-  if (!res.ok) throw new Error(`Review ${id}: HTTP ${res.status}`);
-  const post = (await res.json()) as WpPost;
-  return {
-    id: post.id,
-    html: post.content.rendered,
-    modified: Math.floor(Date.parse(`${post.modified_gmt}Z`) / 1000),
-    date: post.date,
-    link: post.link,
-  };
+  return apiJson<ReviewPost>(`reviews/${id}`);
 }
 
+/** Resolves an internal review link; null when the slug isn't a review in the app (404). */
 export async function fetchPostIdBySlug(slug: string): Promise<number | null> {
-  const res = await fetch(`${API_URL}/wp/v2/posts?slug=${encodeURIComponent(slug)}&_fields=id`);
-  if (!res.ok) return null;
-  const posts = (await res.json()) as { id: number }[];
-  return posts[0]?.id ?? null;
+  try {
+    // The path segment may still be percent-encoded; encode it exactly once.
+    const { id } = await apiJson<{ id: number }>(`reviews?slug=${encodeURIComponent(decodeURIComponent(slug))}`);
+    return id;
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 404) return null;
+    throw e;
+  }
 }
 
 export type Related = { sameAuthor: number[]; similar: number[] };
 
-/** Custom endpoint, not built yet on the WP side (see docs/SPEC.md). */
 export async function fetchRelated(id: number): Promise<Related> {
-  const res = await fetch(`${API_URL}/app/v1/related/${id}`);
-  if (!res.ok) throw new Error(`Related ${id}: HTTP ${res.status}`);
-  return (await res.json()) as Related;
+  return apiJson<Related>(`related/${id}`);
 }

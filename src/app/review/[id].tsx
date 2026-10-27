@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 
+import { OfflineBanner } from '@/components/offline-banner';
 import { FontFamily, type Palette } from '@/constants/theme';
 import { useOnline } from '@/hooks/use-online';
 import { OfflineUnavailableError, useCoverSrc, useRelated, useReview } from '@/hooks/use-review';
@@ -220,16 +221,7 @@ export default function ReviewScreen() {
           )}
         </View>
       </View>
-      {!online && (
-        <View style={styles.banner} accessibilityRole="alert">
-          <SymbolView
-            name={{ ios: 'wifi.slash', android: 'wifi_off', web: 'wifi_off' }}
-            tintColor={colors.offlineBannerText}
-            size={18}
-          />
-          <Text style={styles.bannerText}>Офлайн режим · изображенията са скрити</Text>
-        </View>
-      )}
+      {!online && <OfflineBanner />}
       {body}
     </View>
   );
@@ -313,18 +305,6 @@ function createStyles(c: Palette) {
     },
     headerRight: { flexDirection: 'row' },
     aa: { fontFamily: FontFamily.serifBold, fontSize: 17, color: c.text },
-    banner: {
-      marginHorizontal: 16,
-      marginBottom: 4,
-      paddingVertical: 10,
-      paddingHorizontal: 14,
-      borderRadius: 10,
-      backgroundColor: c.offlineBanner,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-    },
-    bannerText: { fontFamily: FontFamily.sans, fontSize: 13, color: c.offlineBannerText },
     web: { flex: 1, backgroundColor: c.surface },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 8 },
     messageTitle: {

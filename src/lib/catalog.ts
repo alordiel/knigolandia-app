@@ -3,7 +3,8 @@ import NetInfo from '@react-native-community/netinfo';
 import { File, Paths } from 'expo-file-system';
 import { create } from 'zustand';
 
-import { API_URL, UPLOADS_URL } from '@/lib/config';
+import { apiFetch, apiJson } from '@/lib/api';
+import { UPLOADS_URL } from '@/lib/config';
 
 /** One entry of `catalog.json` — see docs/SPEC.md. */
 export type Book = {
@@ -74,12 +75,11 @@ export const useCatalog = create<CatalogState>((set, get) => ({
     try {
       const net = await NetInfo.fetch();
       if (!net.isConnected) return;
-      const res = await fetch(`${API_URL}/app/v1/catalog-version`);
-      const { version, url } = (await res.json()) as { version: number; url: string };
+      const { version, url } = await apiJson<{ version: number; url: string }>('catalog-version');
       const current = Number(await AsyncStorage.getItem(VERSION_KEY));
       if (version === current && get().catalog) return;
 
-      const text = await (await fetch(url)).text();
+      const text = await (await apiFetch(url)).text();
       const catalog = JSON.parse(text) as Catalog;
       file.create({ overwrite: true });
       file.write(text);

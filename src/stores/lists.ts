@@ -11,6 +11,8 @@ type ListsState = Record<ListName, number[]> & {
   toggle: (list: Exclude<ListName, 'readLater'>, id: number) => void;
   /** Read later = offline download; resolves once the files are written or removed. */
   toggleReadLater: (book: Book) => Promise<void>;
+  /** Startup: drop IDs whose book is no longer in the catalogue (files are removed separately). */
+  prune: (exists: (id: number) => boolean) => void;
 };
 
 const without = (ids: number[], id: number) => ids.filter((x) => x !== id);
@@ -32,6 +34,12 @@ export const useLists = create<ListsState>()(
           set((s) => ({ readLater: [book.id, ...without(s.readLater, book.id)] }));
         }
       },
+      prune: (exists) =>
+        set((s) => ({
+          bookmarks: s.bookmarks.filter(exists),
+          wishlist: s.wishlist.filter(exists),
+          readLater: s.readLater.filter(exists),
+        })),
     }),
     {
       name: 'lists',
