@@ -20,6 +20,8 @@ export default function DrawerLayout() {
         drawerType: 'front',
         drawerStyle: { width: 304, backgroundColor: c.surface },
         overlayColor: 'rgba(28,31,30,0.45)',
+        // Hidden screens skip re-renders (e.g. the home list on a theme change) until focused again.
+        freezeOnBlur: true,
       }}>
       {/* SDK 58: only declared screens render. */}
       <Drawer.Screen name="index" />

@@ -41,6 +41,20 @@ export default function SettingsScreen() {
 
   const { theme, setTheme, push, setPush, fontSize, setFontSize } = useSettings();
   const catalog = useCatalog((s) => s.catalog);
+  // Switching the theme re-renders the whole app synchronously (zustand updates can't be transitions),
+  // so mark the choice and show a spinner first, then apply it once that frame is on screen.
+  const [pendingTheme, setPendingTheme] = useState<ThemeSetting | null>(null);
+  const shownTheme = pendingTheme ?? theme;
+  const onSelectTheme = (value: ThemeSetting) => {
+    if (value === shownTheme) return;
+    setPendingTheme(value);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        setTheme(value);
+        setPendingTheme(null);
+      })
+    );
+  };
   const [pushBusy, setPushBusy] = useState(false);
   const [clearing, setClearing] = useState(false);
 
@@ -118,15 +132,21 @@ export default function SettingsScreen() {
         <Section title="Тема" styles={styles}>
           <View style={styles.segmented} accessibilityRole="radiogroup" accessibilityLabel="Тема">
             {THEMES.map((t) => {
-              const active = t.value === theme;
+              const active = t.value === shownTheme;
+              const busy = t.value === pendingTheme;
               return (
                 <Pressable
                   key={t.value}
                   accessibilityRole="radio"
-                  accessibilityState={{ checked: active }}
-                  onPress={() => setTheme(t.value)}
+                  accessibilityState={{ checked: active, busy }}
+                  disabled={pendingTheme != null}
+                  onPress={() => onSelectTheme(t.value)}
                   style={[styles.segment, active && styles.segmentActive]}>
-                  <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{t.label}</Text>
+                  {busy ? (
+                    <ActivityIndicator size="small" color={c.textMuted} />
+                  ) : (
+                    <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{t.label}</Text>
+                  )}
                 </Pressable>
               );
             })}
