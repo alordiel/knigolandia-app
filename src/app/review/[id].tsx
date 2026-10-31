@@ -24,6 +24,7 @@ import { OfflineUnavailableError, useCoverSrc, useRelated, useReview } from '@/h
 import { useTheme } from '@/hooks/use-theme';
 import { coverUrl, names, useCatalog, type Book } from '@/lib/catalog';
 import { SITE_URL } from '@/lib/config';
+import { goHome } from '@/lib/home';
 import { fetchPostIdBySlug } from '@/lib/review-api';
 import {
   buildReviewHtml,
@@ -221,6 +222,13 @@ export default function ReviewScreen() {
               />
             </IconButton>
           )}
+          <IconButton label="Начало" onPress={goHome}>
+            <SymbolView
+              name={{ ios: 'house', android: 'home', web: 'home' }}
+              tintColor={colors.text}
+              size={22}
+            />
+          </IconButton>
         </View>
       </View>
       {!online && <OfflineBanner />}

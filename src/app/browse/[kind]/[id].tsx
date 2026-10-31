@@ -13,6 +13,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { booksFor, isBrowseKind, type BrowseKind } from '@/lib/browse';
 import { useCatalog } from '@/lib/catalog';
 import { plural } from '@/lib/format';
+import { goHome } from '@/lib/home';
 
 export default function BrowseBooksScreen() {
   const { kind, id } = useLocalSearchParams<{ kind: string; id: string }>();
@@ -35,7 +36,13 @@ function BrowseBooks({ kind, id }: { kind: BrowseKind; id: number }) {
 
   return (
     <View style={[styles.screen, { backgroundColor: c.background }]}>
-      <ScreenHeader title={name ?? ''} leading="back" align="left" large={tablet} />
+      <ScreenHeader
+        title={name ?? ''}
+        leading="back"
+        align="left"
+        large={tablet}
+        action={{ icon: 'home', label: 'Начало', onPress: goHome }}
+      />
       {!online && <OfflineBanner />}
       {catalog ? (
         <BookList

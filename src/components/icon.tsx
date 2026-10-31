@@ -4,6 +4,7 @@ import { SymbolView } from 'expo-symbols';
 const ICONS = {
   back: { ios: 'chevron.left', android: 'arrow_back_ios_new', web: 'arrow_back_ios_new' },
   menu: { ios: 'line.3.horizontal', android: 'menu', web: 'menu' },
+  home: { ios: 'house', android: 'home', web: 'home' },
   search: { ios: 'magnifyingglass', android: 'search', web: 'search' },
   book: { ios: 'book.closed', android: 'book', web: 'book' },
   clock: { ios: 'clock', android: 'schedule', web: 'schedule' },
