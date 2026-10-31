@@ -125,14 +125,14 @@ Keep `p`, `em`, `strong`, `blockquote`, headings.
 ## Navigation (Drawer)
 Ревюта: Художествена · Нехудожествена · Търсене
 Моята библиотека: Отметки · Списък с желания · За по-късно (with counts)
-Разглеждане: Автори · Преводачи · Издателства · Жанрове
+Разглеждане: Издателства · Жанрове
 Footer: Настройки
 
 ## Home / lists
 - Tabs: Художествена / Нехудожествена. Genre chips filter.
 - Card: cover, headline, author, translator, star rating, genre, reading time, offline badge.
 - Search: `toLocaleLowerCase('bg')` over title, headline, author, translator.
-- Author / translator / publisher / genre screens: alphabetical list from lookup tables → filtered book list.
+- Publisher / genre screens: alphabetical list from lookup tables → filtered book list.
 
 ## Settings
 - Theme: Системна / Светла / Тъмна (native + WebView CSS).

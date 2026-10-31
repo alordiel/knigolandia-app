@@ -19,7 +19,7 @@ export default function BrowseBooksScreen() {
   return <BrowseBooks kind={kind} id={Number(id)} />;
 }
 
-/** Books by one author / translator / publisher / genre. */
+/** Books by one publisher / genre. */
 function BrowseBooks({ kind, id }: { kind: BrowseKind; id: number }) {
   const c = useTheme();
   const tablet = useTablet();

@@ -1,11 +1,9 @@
 import type { Book, Catalog, Lookup } from '@/lib/catalog';
 
-export type BrowseKind = 'authors' | 'translators' | 'publishers' | 'genres';
+export type BrowseKind = 'publishers' | 'genres';
 
 /** Drawer → Разглеждане: lookup table + how a book links to an entry. */
 export const BROWSE: Record<BrowseKind, { title: string; filter: string; ids: (b: Book) => (number | null)[] }> = {
-  authors: { title: 'Автори', filter: 'Търсене на автор', ids: (b) => b.author_id },
-  translators: { title: 'Преводачи', filter: 'Търсене на преводач', ids: (b) => b.translator_id },
   publishers: { title: 'Издателства', filter: 'Търсене на издателство', ids: (b) => [b.publisher_id] },
   genres: { title: 'Жанрове', filter: 'Търсене на жанр', ids: (b) => b.genre_id },
 };

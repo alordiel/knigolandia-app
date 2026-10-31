@@ -89,8 +89,6 @@ function DrawerMenu({ state, navigation }: DrawerContentComponentProps) {
     {
       title: 'Разглеждане',
       items: [
-        { key: 'authors', label: 'Автори', href: '/browse/authors' },
-        { key: 'translators', label: 'Преводачи', href: '/browse/translators' },
         { key: 'publishers', label: 'Издателства', href: '/browse/publishers' },
         { key: 'genres', label: 'Жанрове', href: '/browse/genres' },
       ],
