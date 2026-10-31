@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { BookList } from '@/components/book-list';
+import { Deferred } from '@/components/loading-screen';
 import { OfflineBanner } from '@/components/offline-banner';
 import { ScreenHeader } from '@/components/screen-header';
 import { FontFamily } from '@/constants/theme';
@@ -16,7 +17,11 @@ import { plural } from '@/lib/format';
 export default function BrowseBooksScreen() {
   const { kind, id } = useLocalSearchParams<{ kind: string; id: string }>();
   if (!isBrowseKind(kind)) return <Redirect href="/" />;
-  return <BrowseBooks kind={kind} id={Number(id)} />;
+  return (
+    <Deferred>
+      <BrowseBooks kind={kind} id={Number(id)} />
+    </Deferred>
+  );
 }
 
 /** Books by one publisher / genre. */

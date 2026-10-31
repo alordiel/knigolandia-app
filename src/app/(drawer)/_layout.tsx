@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/icon';
+import { Deferred } from '@/components/loading-screen';
 import { FontFamily, type Palette } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCatalog } from '@/lib/catalog';
@@ -15,6 +16,13 @@ export default function DrawerLayout() {
   return (
     <Drawer
       drawerContent={(props) => <DrawerMenu {...props} />}
+      // Loading screen first on every newly opened screen. Browse / library reuse one route for
+      // several lists, so switching list (params) counts as a new screen too.
+      screenLayout={({ route, children }) => (
+        <Deferred key={route.name === 'index' ? route.key : `${route.key}:${JSON.stringify(route.params ?? {})}`}>
+          {children}
+        </Deferred>
+      )}
       screenOptions={{
         headerShown: false,
         drawerType: 'front',
