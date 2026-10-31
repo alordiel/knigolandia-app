@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   Pressable,
   Share,
   StyleSheet,
@@ -165,7 +166,8 @@ export default function ReviewScreen() {
         setSupportMultipleWindows={false}
         allowsLinkPreview={false}
         contentInset={{ bottom: insets.bottom }}
-        decelerationRate="normal"
+        // iOS-only; Android's native prop expects a number and crashes on the "normal" string.
+        decelerationRate={Platform.OS === 'ios' ? 'normal' : undefined}
       />
     );
   } else if (review.error instanceof OfflineUnavailableError) {
