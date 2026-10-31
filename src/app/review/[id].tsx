@@ -145,7 +145,8 @@ export default function ReviewScreen() {
 
   const onShare = () => {
     const url = review.data?.link ?? `${SITE_URL}/?p=${id}`;
-    Share.share({ message: book ? `${book.heading}\n${url}` : url, url });
+    // Only the review's page URL. iOS shares `url` as a link; Android only reads `message`.
+    Share.share(Platform.OS === 'ios' ? { url } : { message: url });
   };
 
   const onTextSize = () => {
