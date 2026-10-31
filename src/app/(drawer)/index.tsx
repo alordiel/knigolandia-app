@@ -173,9 +173,9 @@ function createStyles(c: Palette, tablet: boolean) {
     tabTextActive: { fontFamily: FontFamily.sansSemiBold, color: c.onAccent },
     chipsScroll: { flexGrow: 0 },
     chips: { gap: 8, paddingHorizontal: gutter, paddingBottom: tablet ? 16 : 12 },
-    chip: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: c.backgroundElement },
+    chip: { paddingHorizontal: 12, borderRadius: 8, backgroundColor: c.backgroundElement },
     chipActive: { backgroundColor: c.accentSoft },
-    chipText: { fontFamily: FontFamily.sans, fontSize: 13, color: c.textSecondary },
+    chipText: { fontFamily: FontFamily.sans, fontSize: 13, marginBottom: 6, lineHeight: 30, color: c.textSecondary },
     chipTextActive: { fontFamily: FontFamily.sansMedium, color: c.accentText },
     empty: {
       fontFamily: FontFamily.sans,
