@@ -91,7 +91,7 @@ function stars(rating: number, tag: 'dd' | 'div') {
     return `<span class="star"><svg viewBox="0 0 24 24"><path d="${STAR_PATH}"/></svg><span style="width:${w}%"><svg viewBox="0 0 24 24"><path d="${STAR_PATH}"/></svg></span></span>`;
   });
   const label = formatRating(rating);
-  return `<${tag} class="rating" role="img" aria-label="Рейтинг ${label} от 5">${items.join('')}<b>${label}</b></${tag}>`;
+  return `<${tag} class="rating" role="img" aria-label="Рейтинг ${label} от 5">${items.join('')}<b>${label}/5</b></${tag}>`;
 }
 
 function actionButton(action: ListAction) {
